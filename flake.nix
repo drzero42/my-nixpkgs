@@ -8,15 +8,18 @@
 
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system}; in
+      let
+        pkgs = (import nixpkgs {
+          inherit system;
+          config = {
+            permittedInsecurePackages = [ "electron-22.3.27" ];
+          };
+        });
+      in
       {
         packages = rec {
-          ec2-instance-selector = pkgs.callPackage ./ec2-instance-selector {
-            lib = pkgs.lib;
-            buildGoModule = pkgs.buildGoModule;
-            fetchFromGitHub = pkgs.fetchFromGitHub;
-          };
-          default = ec2-instance-selector;
+          ec2-instance-selector = pkgs.callPackage ./ec2-instance-selector { pkgs = pkgs; };
+          leapp = pkgs.callPackage ./leapp { pkgs = pkgs; };
         };
         apps = rec {
           ec2-instance-selector = flake-utils.lib.mkApp {

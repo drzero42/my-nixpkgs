@@ -1,4 +1,9 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ pkgs }:
+let
+  lib = pkgs.lib;
+  buildGoModule = pkgs.buildGoModule;
+  fetchFromGitHub = pkgs.fetchFromGitHub;
+in
 buildGoModule rec {
   pname = "amazon-ec2-instance-selector";
   version = "2.4.1";
